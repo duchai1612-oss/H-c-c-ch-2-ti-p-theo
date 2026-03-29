@@ -126,4 +126,70 @@
     let c1=0, c2=0, c3=0;
 
     function initGame1() {
-        const d
+        const d = g1Data[c1];
+        document.getElementById('g1-word').innerText = d.q;
+        const box = document.getElementById('g1-options'); box.innerHTML = '';
+        d.opts.forEach((o, i) => {
+            const b = document.createElement('button'); b.className='btn-opt'; b.innerText=o;
+            b.onclick = () => {
+                if(i===d.ans) { totalScore+=10; updateUI(); showFeed('g1', "✅ Правильно!"); c1=(c1+1)%g1Data.length; setTimeout(initGame1, 1000); }
+                else showFeed('g1', "❌ Ошибка!", true);
+            };
+            box.appendChild(b);
+        });
+    }
+
+    function initGame2() {
+        const d = g2Data[c2];
+        document.getElementById('g2-word').innerText = d.q + "... " + d.n;
+        const box = document.getElementById('g2-options'); box.innerHTML = '';
+        d.opts.forEach(o => {
+            const b = document.createElement('button'); b.className='btn-opt'; b.innerText=o;
+            b.onclick = () => {
+                if(o===d.ans) { totalScore+=10; updateUI(); showFeed('g2', "🎯 Отлично!"); c2=(c2+1)%g2Data.length; setTimeout(initGame2, 1000); }
+                else showFeed('g2', "❌ Попробуй ещё!", true);
+            };
+            box.appendChild(b);
+        });
+    }
+
+    function initGame3() {
+        const d = g3Data[c3];
+        document.getElementById('g3-word').innerText = d.q;
+        const box = document.getElementById('g3-options'); box.innerHTML = '';
+        d.opts.forEach(o => {
+            const b = document.createElement('button'); b.className='btn-opt'; b.innerText=o;
+            b.onclick = () => {
+                if(o===d.ans) { totalScore+=10; updateUI(); showFeed('g3', "⭐ Супер!"); c3=(c3+1)%g3Data.length; setTimeout(initGame3, 1000); }
+                else showFeed('g3', "❌ Неверно!", true);
+            };
+            box.appendChild(b);
+        });
+    }
+
+    function showFeed(id, msg, isErr=false) {
+        const el = document.getElementById(id+'-feedback');
+        el.innerText = msg; el.style.color = isErr ? "var(--danger)" : "var(--success)";
+    }
+
+    function saveStudent() {
+        let students = JSON.parse(localStorage.getItem('rus_students') || "[]");
+        let s = students.find(x => x.name === studentName);
+        if(s) s.score = totalScore; 
+        else students.push({name: studentName, score: totalScore, date: new Date().toLocaleString()});
+        localStorage.setItem('rus_students', JSON.stringify(students));
+    }
+
+    function showAdmin() {
+        if(prompt("Пароль:") === "1234") {
+            document.getElementById('admin-panel').style.display='block';
+            const list = document.getElementById('student-list'); list.innerHTML='';
+            JSON.parse(localStorage.getItem('rus_students') || "[]").forEach(s => {
+                list.innerHTML += `<tr><td>${s.name}</td><td>${s.score}</td><td>${s.date}</td></tr>`;
+            });
+        }
+    }
+    function clearData() { if(confirm("Удалить всех?")) { localStorage.clear(); location.reload(); } }
+</script>
+</body>
+</html>
